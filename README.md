@@ -1,4 +1,4 @@
-# README
+# Student Details
 
 **Name**: Prathamesh Yadav  
 **PRN**: 22070521501  
