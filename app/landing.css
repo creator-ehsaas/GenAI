@@ -1,0 +1,63 @@
+.lp { --lp-max: 1160px; background: var(--bg); overflow-x: clip; }
+.lp-wrap { max-width: var(--lp-max); margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-left)); }
+.lp-nav { display: flex; align-items: center; gap: 18px; padding: 18px 0; }
+.lp-nav .links { display: flex; gap: 18px; margin-left: auto; align-items: center; }
+.lp-nav .links a:not(.btn) { text-decoration: none; color: var(--muted); font-weight: 500; }
+.lp-nav .links a:not(.btn):hover { color: var(--fg); }
+@media (max-width: 720px) { .lp-nav .links a:not(.btn) { display: none; } }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 40px; align-items: center; padding: 48px 0 72px; }
+@media (max-width: 900px) { .hero { grid-template-columns: minmax(0, 1fr); padding-top: 24px; } }
+.hero h1 { font-size: clamp(38px, 6.4vw, 68px); line-height: 1.02; letter-spacing: -0.035em; }
+.hero h1 em { font-style: normal; background: linear-gradient(100deg, #6d4bd8, #e2597a 55%, #f7a64b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .lede { font-size: clamp(16px, 1.6vw, 19px); color: var(--muted); max-width: 54ch; margin-top: 18px; }
+.urlbox { margin-top: 28px; display: flex; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 6px; box-shadow: var(--shadow); max-width: 560px; }
+.urlbox input { border: 0; background: transparent; font-size: 16px; }
+.urlbox input:focus { border: 0; }
+.urlbox .btn { padding: 12px 18px; font-size: 15px; }
+@media (max-width: 520px) { .urlbox { flex-direction: column; } }
+.proof { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 18px; color: var(--muted); font-size: 13.5px; }
+.proof span { display: inline-flex; gap: 6px; align-items: center; }
+.proof svg { width: 15px; height: 15px; color: var(--ok); }
+
+.phones { position: relative; height: 560px; }
+@media (max-width: 900px) { .phones { height: 480px; } }
+.lp-phone { position: absolute; width: 230px; aspect-ratio: 9/16; border-radius: 30px; background: #0b0c10; padding: 7px; box-shadow: 0 30px 60px -25px rgba(20, 20, 50, 0.55); }
+.lp-phone .scr { width: 100%; height: 100%; border-radius: 24px; overflow: hidden; position: relative; display: grid; align-content: start; padding-top: 26%; }
+.lp-phone .scr .ov { margin: 0 14px; text-align: center; color: #fff; font: 800 19px/1.2 Montserrat, sans-serif; -webkit-text-stroke: 4px #000; paint-order: stroke fill; }
+.lp-phone .scr .ov.box span { background: #fff; color: #000; -webkit-text-stroke: 0; padding: 2px 6px; border-radius: 5px; box-decoration-break: clone; -webkit-box-decoration-break: clone; line-height: 1.55; }
+.lp-phone .scr .face { position: absolute; left: 50%; bottom: -8%; width: 78%; aspect-ratio: 1; transform: translateX(-50%); border-radius: 50% 50% 0 0; background: rgba(255, 255, 255, 0.18); }
+.lp-phone .scr .face::before { content: ""; position: absolute; left: 50%; top: -38%; width: 52%; aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%; background: rgba(255, 255, 255, 0.22); }
+.lp-phone.p1 { left: 4%; top: 40px; transform: rotate(-6deg); animation: float 7s ease-in-out infinite; }
+.lp-phone.p2 { left: 34%; top: 0; z-index: 2; animation: float 6s ease-in-out infinite 0.6s; }
+.lp-phone.p3 { left: 62%; top: 70px; transform: rotate(6deg); animation: float 8s ease-in-out infinite 1.2s; }
+@media (max-width: 520px) { .lp-phone { width: 170px; } .lp-phone.p1 { left: -6%; } .lp-phone.p3 { left: 56%; } .lp-phone .scr .ov { font-size: 14px; } }
+@keyframes float { 50% { translate: 0 -10px; } }
+@media (prefers-reduced-motion: reduce) { .lp-phone { animation: none !important; } }
+
+.lp-sec { padding: 72px 0; border-top: 1px solid var(--line); }
+.lp-sec .eyebrow { font: 600 12.5px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lp-sec h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; margin-top: 10px; max-width: 22ch; }
+.lp-sec .sub { color: var(--muted); max-width: 60ch; margin-top: 12px; font-size: 17px; }
+.steps3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 36px; }
+.fgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 36px; }
+.feat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 36px; }
+@media (max-width: 900px) { .steps3, .feat { grid-template-columns: minmax(0, 1fr); } .fgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .fgrid { grid-template-columns: minmax(0, 1fr); } }
+.lp-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 10px; align-content: start; }
+.lp-card .ic { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.lp-card .ic svg { width: 20px; height: 20px; }
+.lp-card h3 { font-size: 18px; }
+.lp-card p { color: var(--muted); font-size: 14.5px; }
+.lp-card .step { font: 600 13px var(--mono); color: var(--accent); }
+.fmt { border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+.fmt .vis { aspect-ratio: 4/3; display: grid; place-items: center; padding: 20px; color: #fff; font: 800 18px/1.2 Montserrat, sans-serif; text-align: center; -webkit-text-stroke: 3px rgba(0,0,0,.85); paint-order: stroke fill; }
+.fmt .meta { padding: 16px; display: grid; gap: 6px; }
+.fmt .meta p { color: var(--muted); font-size: 14px; }
+.faq { display: grid; gap: 10px; margin-top: 28px; max-width: 820px; }
+.faq details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+.faq summary { font-weight: 600; cursor: pointer; }
+.faq details p { color: var(--muted); margin-top: 10px; }
+.cta { text-align: center; display: grid; justify-items: center; gap: 16px; padding: 88px 0; }
+.cta h2 { max-width: 20ch; }
+.lp-foot { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 13.5px; display: flex; gap: 12px; flex-wrap: wrap; }
