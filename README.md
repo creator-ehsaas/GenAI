@@ -33,7 +33,9 @@ npm run dev                  # http://localhost:3000
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `GEMINI_API_KEY` | yes (for AI) | Key from https://aistudio.google.com/apikey. Without it, editing and rendering still work. |
-| `GEMINI_MODEL` | no | Defaults to `gemini-3.8-flash`. Any Gemini model your key can use, e.g. `gemini-4-argon` for the most capable one. |
+| `GEMINI_MODEL` | no | Main model. Defaults to `gemini-flash-latest`. |
+| `GEMINI_FALLBACK_MODEL` | no | Answers when the main model is overloaded, rate limited or slow. Defaults to `gemini-flash-lite-latest`; set it empty to turn off. |
+| `GEMINI_TIMEOUT_MS` | no | How long to wait for the main model before falling back. Defaults to 45000 (research gets twice as long). |
 | `META_AD_LIBRARY_TOKEN` | no | Enables importing competitor ads from Meta's Ad Library (EU-delivered ads only, per Meta). |
 | `REELFORGE_API_KEY` | no | When set, `/api/*` requires `Authorization: Bearer <key>`. Enter the same key in Studio → Settings. |
 

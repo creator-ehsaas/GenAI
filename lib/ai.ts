@@ -1,9 +1,12 @@
 import "server-only";
-import { ApiError, FinishReason, GoogleGenAI, type Part } from "@google/genai";
+import { ApiError, FinishReason, type GenerateContentParameters, type GenerateContentResponse, GoogleGenAI, type Part } from "@google/genai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-export const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+export const MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
+/** Answers when the main model is overloaded or slow. Set GEMINI_FALLBACK_MODEL="" to turn off. */
+export const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL ?? "gemini-flash-lite-latest";
+const TIMEOUT_MS = Number(process.env.GEMINI_TIMEOUT_MS) || 45_000;
 
 const apiKey = () => process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 export const aiConfigured = () => Boolean(apiKey());
@@ -19,7 +22,7 @@ export class InputError extends Error {}
 
 export class AIError extends Error {
   constructor(
-    public code: "refusal" | "truncated" | "empty" | "config",
+    public code: "refusal" | "truncated" | "empty" | "config" | "quota",
     message: string,
   ) {
     super(message);
@@ -30,6 +33,23 @@ const BLOCKED = new Set<string>([FinishReason.SAFETY, FinishReason.PROHIBITED_CO
 
 function requireKey() {
   if (!aiConfigured()) throw new AIError("config", "GEMINI_API_KEY is not set on the server. Add it to .env.local and restart.");
+}
+
+const isAbort = (e: unknown) => e instanceof Error && (e.name === "AbortError" || e.name === "TimeoutError");
+const shouldFallBack = (e: unknown) => isAbort(e) || (e instanceof ApiError && [429, 500, 503, 504].includes(e.status));
+
+/**
+ * Calls the main model with a time limit; if it is overloaded, rate limited or too slow,
+ * runs the same request on the fallback model.
+ */
+async function callGemini(params: Omit<GenerateContentParameters, "model">, timeoutMs = TIMEOUT_MS): Promise<GenerateContentResponse> {
+  try {
+    return await getClient().models.generateContent({ ...params, model: MODEL, config: { ...params.config, abortSignal: AbortSignal.timeout(timeoutMs) } });
+  } catch (e) {
+    if (!FALLBACK_MODEL || FALLBACK_MODEL === MODEL || !shouldFallBack(e)) throw e;
+    console.warn(`[gemini] ${MODEL} ${isAbort(e) ? `took over ${timeoutMs / 1000}s` : `failed (${(e as ApiError).status})`}; using ${FALLBACK_MODEL}`);
+    return getClient().models.generateContent({ ...params, model: FALLBACK_MODEL });
+  }
 }
 
 /** Gemini's responseJsonSchema takes plain JSON Schema; drop the draft marker zod adds. */
@@ -44,8 +64,7 @@ export type InlineImage = { mediaType: string; data: string };
 export async function generate<T extends z.ZodType>(opts: { schema: T; system: string; prompt: string; images?: InlineImage[] }): Promise<z.infer<T>> {
   requireKey();
   const parts: Part[] = [...(opts.images ?? []).map((i) => ({ inlineData: { mimeType: i.mediaType, data: i.data } })), { text: opts.prompt }];
-  const res = await getClient().models.generateContent({
-    model: MODEL,
+  const res = await callGemini({
     contents: [{ role: "user", parts }],
     config: {
       systemInstruction: opts.system,
@@ -74,11 +93,22 @@ export async function generate<T extends z.ZodType>(opts: { schema: T; system: s
 /** Free-form research grounded in Google Search. Returns the notes followed by the source URLs. */
 export async function webResearch(opts: { system: string; prompt: string }): Promise<string> {
   requireKey();
-  const res = await getClient().models.generateContent({
-    model: MODEL,
-    contents: opts.prompt,
-    config: { systemInstruction: opts.system, tools: [{ googleSearch: {} }], maxOutputTokens: 16000 },
-  });
+  // Searching takes longer, so the main model gets more time before falling back.
+  let res: GenerateContentResponse;
+  try {
+    res = await callGemini(
+      { contents: opts.prompt, config: { systemInstruction: opts.system, tools: [{ googleSearch: {} }], maxOutputTokens: 16000 } },
+      TIMEOUT_MS * 2,
+    );
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 429) {
+      throw new AIError(
+        "quota",
+        "Web research needs Google Search grounding, and this Gemini key is out of search quota (often a free-tier limit). Enable billing on the key's project or try later. Pasting ads or uploading screenshots still works.",
+      );
+    }
+    throw e;
+  }
   if (res.promptFeedback?.blockReason) throw new AIError("refusal", "Gemini blocked this request.");
   const text = res.text?.trim();
   if (!text) throw new AIError("empty", "The research came back empty. Try again.");
@@ -100,7 +130,7 @@ export function checkAccess(req: Request): NextResponse | null {
 export function errorResponse(e: unknown): NextResponse {
   if (e instanceof InputError) return NextResponse.json({ error: e.message }, { status: 400 });
   if (e instanceof AIError) {
-    const status = e.code === "config" ? 500 : e.code === "refusal" ? 422 : 502;
+    const status = e.code === "config" ? 500 : e.code === "refusal" ? 422 : e.code === "quota" ? 429 : 502;
     return NextResponse.json({ error: e.message, code: e.code }, { status });
   }
   if (e instanceof ApiError) {
@@ -111,6 +141,7 @@ export function errorResponse(e: unknown): NextResponse {
     if (e.status === 400) return NextResponse.json({ error: `Gemini rejected the request: ${e.message}` }, { status: 400 });
     return NextResponse.json({ error: `Gemini API error (${e.status}). Try again.` }, { status: 502 });
   }
+  if (isAbort(e)) return NextResponse.json({ error: "Gemini took too long to answer. Try again in a moment." }, { status: 504 });
   if (e instanceof TypeError && /fetch failed/i.test(e.message)) {
     return NextResponse.json({ error: "Couldn't reach the Gemini API. Check the server's network." }, { status: 503 });
   }
