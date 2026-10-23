@@ -1,5 +1,5 @@
 "use client";
-import { CalendarDays, ChevronLeft, ChevronRight, Download, Wand2, X } from "lucide-react";
+import { CalendarDays, CalendarPlus, Check, ChevronLeft, ChevronRight, Download, Wand2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -207,7 +207,7 @@ function CalendarInner() {
       day.setDate(day.getDate() + 1);
       n++;
     }
-    toast(`Scheduled ${unscheduled.length} posts, ${times.length} a day`, "ok");
+    toast(`Scheduled ${unscheduled.length} post${unscheduled.length === 1 ? "" : "s"}, ${times.length} a day`, "ok");
   };
 
   const exportIcs = () => {
@@ -236,6 +236,9 @@ function CalendarInner() {
     downloadBlob(new Blob([lines.join("\r\n")], { type: "text/calendar" }), "reelforge-schedule.ics");
   };
 
+  const monthEvents = posts
+    .filter((p) => p.scheduledAt && new Date(p.scheduledAt).getMonth() === month.getMonth() && new Date(p.scheduledAt).getFullYear() === month.getFullYear())
+    .sort((a, b) => a.scheduledAt!.localeCompare(b.scheduledAt!));
   const today = dayKey(new Date());
   const closeDialog = () => {
     setEditing(null);
@@ -251,6 +254,16 @@ function CalendarInner() {
           <p className="hint">Plan when each post goes out. Export to your calendar to get a reminder with the caption ready to paste.</p>
         </div>
         <div className="row">
+          <button
+            className="btn"
+            onClick={() => {
+              const d = new Date();
+              d.setDate(d.getDate() + 1);
+              setAddDay(d);
+            }}
+          >
+            <CalendarPlus /> Schedule post
+          </button>
           <button className="btn" onClick={exportIcs}>
             <Download /> Export .ics
           </button>
@@ -327,9 +340,15 @@ function CalendarInner() {
               <span className="dn">{d.getDate()}</span>
               {evs.map((p) => (
                 <button key={p.id} className={`ev ${p.status === "posted" ? "posted" : ""}`} onClick={() => setEditing(p)} title={postText(p)}>
+                  {p.status === "posted" && <Check aria-label="Posted" />}
                   {new Date(p.scheduledAt!).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} {p.title || postText(p)}
                 </button>
               ))}
+              {evs.length > 0 && (
+                <span className="cnt" aria-hidden="true">
+                  {evs.length} post{evs.length > 1 ? "s" : ""}
+                </span>
+              )}
               <button className="addday" onClick={() => setAddDay(d)} aria-label={`Schedule on ${d.toDateString()}`}>
                 + add
               </button>
@@ -337,6 +356,28 @@ function CalendarInner() {
           );
         })}
       </div>
+
+      <section className="card flat agenda" aria-label={`Posts in ${month.toLocaleDateString([], { month: "long" })}`}>
+        <h2>This month</h2>
+        {monthEvents.length ? (
+          <div className="list">
+            {monthEvents.map((p) => (
+              <button key={p.id} className="item" style={{ gridTemplateColumns: "auto minmax(0,1fr) auto", textAlign: "left", cursor: "pointer", font: "inherit", color: "inherit" }} onClick={() => setEditing(p)}>
+                <span className="small" style={{ fontVariantNumeric: "tabular-nums" }}>
+                  {new Date(p.scheduledAt!).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                </span>
+                <span className="t">{p.title || postText(p)}</span>
+                <span className={`chip ${p.status === "posted" ? "ok" : "warn"}`}>
+                  {p.status === "posted" && <Check size={12} />}
+                  {p.status === "posted" ? "Posted" : "Scheduled"}
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="muted small">Nothing scheduled this month.</p>
+        )}
+      </section>
 
       <div className="grid2">
         <section className="card flat">

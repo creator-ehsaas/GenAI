@@ -10,7 +10,7 @@ export const useToasts = create<S>((set, get) => ({
   push: (text, kind = "info") => {
     const id = ++n;
     set({ toasts: [...get().toasts.slice(-3), { id, text, kind }] });
-    setTimeout(() => get().dismiss(id), kind === "err" ? 7000 : 3500);
+    if (kind !== "err") setTimeout(() => get().dismiss(id), 5000);
   },
   dismiss: (id) => set({ toasts: get().toasts.filter((t) => t.id !== id) }),
 }));

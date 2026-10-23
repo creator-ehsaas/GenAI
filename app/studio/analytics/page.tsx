@@ -32,7 +32,7 @@ function ViewsChart({ posts }: { posts: Post[] }) {
           <div
             key={p.id}
             role="listitem"
-            style={{ display: "grid", gridTemplateColumns: "minmax(0, 220px) minmax(0, 1fr) 56px", gap: 10, alignItems: "center", fontSize: 13, position: "relative", padding: "3px 0" }}
+            style={{ display: "grid", gridTemplateColumns: "minmax(0, 220px) minmax(0, 1fr) 56px", gap: 10, alignItems: "center", fontSize: "0.8125rem", position: "relative", padding: "3px 0" }}
             onMouseEnter={() => setHover(p.id)}
             onMouseLeave={() => setHover(null)}
           >
@@ -44,7 +44,7 @@ function ViewsChart({ posts }: { posts: Post[] }) {
               {fmt(m.views)}
             </span>
             {on && (
-              <div className="toast" style={{ position: "absolute", left: "30%", bottom: "100%", zIndex: 5, fontSize: 12.5, display: "grid", gap: 2, pointerEvents: "none" }}>
+              <div className="toast" style={{ position: "absolute", left: "30%", bottom: "100%", zIndex: 5, fontSize: "0.78rem", display: "grid", gap: 2, pointerEvents: "none" }}>
                 <b>{(p.title || postText(p)).slice(0, 60)}</b>
                 <span>
                   {fmt(m.views)} views · {fmt(m.likes)} likes · {fmt(m.comments)} comments · {fmt(m.shares)} shares · {fmt(m.saves)} saves

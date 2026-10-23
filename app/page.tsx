@@ -200,7 +200,7 @@ export default function Landing() {
           </span>
           <h2>Stop staring at a blank caption box</h2>
           <p className="sub">Your next 30 posts are one link away.</p>
-          <Link className="btn primary" href="/studio" style={{ padding: "14px 22px", fontSize: 16 }}>
+          <Link className="btn primary" href="/studio" style={{ padding: "14px 22px", fontSize: "1rem" }}>
             Open the studio <ArrowRight />
           </Link>
         </section>

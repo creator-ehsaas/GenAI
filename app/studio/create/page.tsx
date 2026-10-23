@@ -24,7 +24,7 @@ import { MediaPicker, MediaThumb } from "@/components/MediaPicker";
 import { PhonePreview } from "@/components/PhonePreview";
 import { StyleControls } from "@/components/StyleControls";
 import { api } from "@/lib/api";
-import { postText, postToComposition } from "@/lib/compose";
+import { postText, postToComposition, STATUS_LABELS } from "@/lib/compose";
 import { blobUrl } from "@/lib/media";
 import { canRecord } from "@/lib/render/record";
 import { downloadRender, downloadSlides, renderPost } from "@/lib/renderPost";
@@ -205,11 +205,11 @@ function Editor({ post }: { post: Post }) {
             onChange={(e) => set({ title: e.target.value })}
             placeholder="Untitled post"
             aria-label="Post title"
-            style={{ font: "800 26px/1.1 var(--display)", background: "transparent", border: "1px solid transparent", padding: "2px 4px", marginLeft: -5 }}
+            style={{ font: "800 1.625rem/1.1 var(--display)", background: "transparent", border: "1px solid transparent", padding: "2px 4px", marginLeft: -5 }}
           />
           <div className="row">
             <span className="chip accent">{FORMAT_LABELS[post.format]}</span>
-            <span className={`chip ${post.status === "posted" ? "ok" : post.status === "scheduled" ? "warn" : ""}`}>{post.status}</span>
+            <span className={`chip ${post.status === "posted" ? "ok" : post.status === "scheduled" ? "warn" : ""}`}>{STATUS_LABELS[post.status]}</span>
           </div>
         </div>
         <div className="row">

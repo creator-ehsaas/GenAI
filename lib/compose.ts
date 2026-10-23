@@ -62,4 +62,6 @@ export const slug = (s: string) =>
     .replace(/^-|-$/g, "")
     .slice(0, 36) || "post";
 
+export const STATUS_LABELS: Record<PostStatus, string> = { draft: "Draft", rendered: "Rendered", scheduled: "Scheduled", posted: "Posted" };
+
 export const statusChip = (s: PostStatus) => (s === "posted" ? "ok" : s === "scheduled" ? "warn" : s === "rendered" ? "accent" : "");

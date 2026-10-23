@@ -42,6 +42,14 @@ const NAV = [
   { href: "/studio/settings", label: "Settings", icon: Settings },
 ] as const;
 
+const TABS = [
+  { href: "/studio", label: "Home", icon: LayoutDashboard },
+  { href: "/studio/ideas", label: "Ideas", icon: Lightbulb },
+  { href: "/studio/create", label: "Create", icon: Sparkles },
+  { href: "/studio/posts", label: "Posts", icon: Clapperboard },
+  { href: "/studio/calendar", label: "Calendar", icon: CalendarDays },
+];
+
 export default function StudioLayout({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
@@ -79,19 +87,33 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
               Brand: <b style={{ color: "var(--fg)" }}>{brand.name}</b>
             </span>
           )}
-          {health && <span className="mono">{health.aiConfigured ? `AI · ${health.model}` : "AI not configured"}</span>}
+          {health && <span title={health.model}>{health.aiConfigured ? "AI ready" : "AI off: no API key on the server"}</span>}
         </div>
       </aside>
       {open && <div className="scrim" onClick={() => setOpen(false)} />}
       <div style={{ minWidth: 0 }}>
         <div className="topbar">
-          <button className="btn icon ghost" onClick={() => setOpen(true)} aria-label="Open menu">
+          <Link href="/" className="brandmark" style={{ padding: 0, fontSize: "1.0625rem" }}>
+            <span className="logo">
+              <Zap />
+            </span>
+            Reel Forge
+          </Link>
+          <span className="spacer" />
+          <button className="btn icon ghost" onClick={() => setOpen(true)} aria-label="All sections" aria-expanded={open}>
             <Menu />
           </button>
-          <b style={{ fontFamily: "var(--display)" }}>Reel Forge</b>
         </div>
         <main className="main">{hydrated ? children : <div className="page" aria-busy="true" />}</main>
       </div>
+      <nav className="tabbar" aria-label="Main sections">
+        {TABS.map((t) => (
+          <Link key={t.href} href={t.href} aria-current={path === t.href ? "page" : undefined}>
+            <t.icon />
+            {t.label}
+          </Link>
+        ))}
+      </nav>
       <Toasts />
     </div>
   );

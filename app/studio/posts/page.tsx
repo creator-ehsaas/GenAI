@@ -3,7 +3,7 @@ import { CalendarPlus, CheckCircle2, Copy, Download, Pencil, Plus, Trash2, Video
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { MediaThumb } from "@/components/MediaPicker";
-import { postText, statusChip } from "@/lib/compose";
+import { postText, STATUS_LABELS, statusChip } from "@/lib/compose";
 import { blobUrl } from "@/lib/media";
 import { bgCss } from "@/lib/render/engine";
 import { canRecord } from "@/lib/render/record";
@@ -21,7 +21,7 @@ function Cover({ post }: { post: Post }) {
     if (post.renderId) blobUrl(post.renderId).then(setUrl);
     else setUrl(null);
   }, [post.renderId]);
-  if (url) return <video src={url} muted loop playsInline preload="metadata" onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} />;
+  if (url) return <video src={url} muted loop playsInline controls preload="metadata" aria-label={`Rendered video: ${postText(post)}`} />;
   if (post.mediaIds[0]) return <MediaThumb id={post.mediaIds[0]} />;
   return (
     <div style={{ width: "100%", height: "100%", background: bgCss(post.background), display: "grid", placeItems: "center", padding: 14, color: "#fff", font: "800 15px/1.2 Montserrat, sans-serif", textAlign: "center" }}>
@@ -85,7 +85,7 @@ export default function PostsPage() {
       <div className="page-head">
         <div className="titles">
           <h1>Posts</h1>
-          <p className="hint">Every draft, rendered video and scheduled post. Hover a video to play it.</p>
+          <p className="hint">Every draft, rendered video and scheduled post.</p>
         </div>
         <div className="row">
           {busy === "all" ? (
@@ -127,7 +127,7 @@ export default function PostsPage() {
             </button>
             {STATUSES.map((s) => (
               <button key={s} aria-pressed={status === s} onClick={() => setStatus(s)}>
-                {s} {posts.filter((p) => p.status === s).length}
+                {STATUS_LABELS[s]} {posts.filter((p) => p.status === s).length}
               </button>
             ))}
           </div>
@@ -149,7 +149,7 @@ export default function PostsPage() {
             <article key={p.id} className="tile">
               <div className="media">
                 <Cover post={p} />
-                <span className={`chip badge ${statusChip(p.status)}`}>{p.status}</span>
+                <span className={`chip badge ${statusChip(p.status)}`}>{STATUS_LABELS[p.status]}</span>
               </div>
               <div className="body">
                 <div className="row">

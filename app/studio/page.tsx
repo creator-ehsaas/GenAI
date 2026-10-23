@@ -2,7 +2,7 @@
 import { ArrowRight, CalendarDays, Clapperboard, FolderOpen, Lightbulb, Sparkles, Store, Table2 } from "lucide-react";
 import Link from "next/link";
 import { AiBanner } from "@/components/AiBanner";
-import { postText } from "@/lib/compose";
+import { postText, STATUS_LABELS } from "@/lib/compose";
 import { useStore } from "@/lib/store";
 
 const STEPS = [
@@ -128,7 +128,7 @@ export default function Dashboard() {
               {posts.slice(0, 5).map((p) => (
                 <Link key={p.id} href={`/studio/create?id=${p.id}`} className="item" style={{ gridTemplateColumns: "minmax(0,1fr) auto", textDecoration: "none" }}>
                   <span className="t">{p.title || postText(p) || "Untitled"}</span>
-                  <span className="chip">{p.status}</span>
+                  <span className="chip">{STATUS_LABELS[p.status]}</span>
                 </Link>
               ))}
             </div>
