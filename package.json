@@ -1,0 +1,31 @@
+{
+  "name": "reel-forge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI short-form content studio: turn a product URL into hooks, captions, slideshows and ready-to-post Reels/Shorts/TikToks.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^2.31.0",
+    "idb-keyval": "^6.3.0",
+    "jszip": "^3.10.2",
+    "lucide-react": "^1.61.0",
+    "next": "^15.5.28",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.7",
+    "zustand": "^5.0.16"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^5.9.3"
+  }
+}
