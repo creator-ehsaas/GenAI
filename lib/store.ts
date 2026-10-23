@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { deleteBlob, uid } from "./media";
-import type { BrandProfile, Format, Idea, MediaItem, Post, SavedIdea, Settings, TextStyle } from "./types";
+import type { AdSource, BrandProfile, Competitor, CompetitorAd, Format, Idea, MediaItem, Post, SavedIdea, SavedReport, Settings, TextStyle } from "./types";
 
 export const DEFAULT_STYLE: TextStyle = { preset: "outline", position: "upper", size: 84, font: "Montserrat", uppercase: false };
 
@@ -73,6 +73,14 @@ type State = {
   posts: Post[];
   media: MediaItem[];
   settings: Settings;
+  competitors: Competitor[];
+  report: SavedReport | null;
+  addCompetitor: (c: Pick<Competitor, "name" | "url"> & Partial<Competitor>) => string;
+  updateCompetitor: (id: string, patch: Partial<Competitor>) => void;
+  removeCompetitor: (id: string) => void;
+  addAds: (competitorId: string, ads: CompetitorAd[], source: AdSource, thumbs?: (string | undefined)[]) => number;
+  removeAd: (competitorId: string, adId: string) => void;
+  setReport: (r: SavedReport | null) => void;
   setBrand: (b: BrandProfile | null, url?: string, notes?: string) => void;
   addIdeas: (ideas: Idea[]) => void;
   updateIdea: (id: string, patch: Partial<SavedIdea>) => void;
@@ -99,6 +107,35 @@ export const useStore = create<State>()(
       posts: [],
       media: [],
       settings: DEFAULT_SETTINGS,
+      competitors: [],
+      report: null,
+      addCompetitor: (c) => {
+        const id = uid();
+        set((s) => ({
+          competitors: [...s.competitors, { id, notes: "", positioning: "", channels: [], research: "", ads: [], createdAt: Date.now(), ...c }],
+        }));
+        return id;
+      },
+      updateCompetitor: (id, patch) => set((s) => ({ competitors: s.competitors.map((c) => (c.id === id ? { ...c, ...patch } : c)) })),
+      removeCompetitor: (id) => set((s) => ({ competitors: s.competitors.filter((c) => c.id !== id) })),
+      addAds: (competitorId, ads, source, thumbs) => {
+        const c = get().competitors.find((x) => x.id === competitorId);
+        if (!c) return 0;
+        const seen = new Set(c.ads.map((a) => a.hook.trim().toLowerCase()));
+        const fresh = ads
+          .map((a, i) => ({ ...a, id: uid(), source, thumb: thumbs?.[i], addedAt: Date.now() }))
+          .filter((a) => {
+            const k = a.hook.trim().toLowerCase();
+            if (!k || seen.has(k)) return false;
+            seen.add(k);
+            return true;
+          });
+        set((s) => ({ competitors: s.competitors.map((x) => (x.id === competitorId ? { ...x, ads: [...fresh, ...x.ads] } : x)) }));
+        return fresh.length;
+      },
+      removeAd: (competitorId, adId) =>
+        set((s) => ({ competitors: s.competitors.map((x) => (x.id === competitorId ? { ...x, ads: x.ads.filter((a) => a.id !== adId) } : x)) })),
+      setReport: (report) => set({ report }),
       setBrand: (brand, url, notes) =>
         set((s) => ({ brand, brandUrl: url ?? s.brandUrl, brandNotes: notes ?? s.brandNotes })),
       addIdeas: (ideas) =>
@@ -152,7 +189,7 @@ export const useStore = create<State>()(
         const { media, posts } = get();
         media.forEach((m) => deleteBlob(m.id).catch(() => {}));
         posts.forEach((p) => p.renderId && deleteBlob(p.renderId).catch(() => {}));
-        set({ brand: null, brandUrl: "", brandNotes: "", ideas: [], posts: [], media: [], settings: DEFAULT_SETTINGS });
+        set({ brand: null, brandUrl: "", brandNotes: "", ideas: [], posts: [], media: [], competitors: [], report: null, settings: DEFAULT_SETTINGS });
       },
     }),
     {

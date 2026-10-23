@@ -10,6 +10,7 @@ import {
   Lightbulb,
   Menu,
   Settings,
+  Swords,
   Sparkles,
   Store,
   Table2,
@@ -27,6 +28,7 @@ const NAV = [
   { sec: "Plan" },
   { href: "/studio", label: "Dashboard", icon: LayoutDashboard },
   { href: "/studio/brand", label: "Brand", icon: Store },
+  { href: "/studio/competitors", label: "Competitors", icon: Swords, count: "competitors" },
   { href: "/studio/ideas", label: "Ideas", icon: Lightbulb, count: "ideas" },
   { href: "/studio/formats", label: "Formats", icon: Layers },
   { sec: "Make" },
@@ -54,7 +56,7 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const hydrated = useHydrated();
-  const counts = useStore(useShallow((s) => ({ ideas: s.ideas.length, posts: s.posts.length, media: s.media.length })));
+  const counts = useStore(useShallow((s) => ({ ideas: s.ideas.length, posts: s.posts.length, media: s.media.length, competitors: s.competitors.length })));
   const brand = useStore((s) => s.brand);
   const health = useHealth();
   useEffect(() => setOpen(false), [path]);

@@ -12,6 +12,9 @@ function getClient() {
   return client;
 }
 
+/** A problem with what the caller sent; maps to HTTP 400. */
+export class InputError extends Error {}
+
 export class AIError extends Error {
   constructor(
     public code: "refusal" | "truncated" | "empty" | "config",
@@ -28,7 +31,8 @@ export class AIError extends Error {
 export async function generate<T extends z.ZodType>(opts: {
   schema: T;
   system: string;
-  prompt: string;
+  /** Plain text, or content blocks when the request carries images. */
+  prompt: string | Anthropic.Beta.BetaContentBlockParam[];
   effort?: "low" | "medium" | "high";
 }): Promise<z.infer<T>> {
   if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) {
@@ -60,6 +64,7 @@ export function checkAccess(req: Request): NextResponse | null {
 }
 
 export function errorResponse(e: unknown): NextResponse {
+  if (e instanceof InputError) return NextResponse.json({ error: e.message }, { status: 400 });
   if (e instanceof AIError) {
     const status = e.code === "config" ? 500 : e.code === "refusal" ? 422 : 502;
     return NextResponse.json({ error: e.message, code: e.code }, { status });
@@ -92,3 +97,46 @@ export const CREATOR_SYSTEM = `You are a short-form content strategist who write
 You write like a real creator, not an ad: specific, relatable, curiosity-driven, never salesy. Hooks name a pain or desire in the viewer's own words.
 Never claim the person on screen uses or endorses the product (the clips may be stock). Avoid generic tags like #fyp, #viral, #foryou.
 Match the requested language exactly (English, Hindi, Hinglish, Spanish, ...). Default to English.`;
+
+/**
+ * Free-form research with the web search server tool. Returns the model's notes with source URLs,
+ * resuming when the server-side search loop pauses.
+ */
+export async function webResearch(opts: { system: string; prompt: string; maxSearches?: number }): Promise<string> {
+  if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) {
+    throw new AIError("config", "ANTHROPIC_API_KEY is not set on the server. Add it to .env.local and restart.");
+  }
+  const messages: Anthropic.Beta.BetaMessageParam[] = [{ role: "user", content: opts.prompt }];
+  for (let i = 0; i < 5; i++) {
+    const res = await getClient()
+      .beta.messages.stream({
+        model: MODEL,
+        max_tokens: 32000,
+        betas: ["server-side-fallback-2026-07-01"],
+        fallbacks: "default",
+        thinking: { type: "adaptive" },
+        output_config: { effort: "medium" },
+        system: opts.system,
+        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: opts.maxSearches ?? 8 }],
+        messages,
+      })
+      .finalMessage();
+    if (res.stop_reason === "refusal") throw new AIError("refusal", "The model declined this request.");
+    if (res.stop_reason === "pause_turn") {
+      messages.push({ role: "assistant", content: res.content });
+      continue;
+    }
+    const sources = new Set<string>();
+    const text = res.content
+      .map((b) => {
+        if (b.type !== "text") return "";
+        for (const c of b.citations ?? []) if ("url" in c && c.url) sources.add(c.url);
+        return b.text;
+      })
+      .join("")
+      .trim();
+    if (!text) throw new AIError("empty", "The research came back empty. Try again.");
+    return sources.size ? `${text}\n\nSources:\n${[...sources].map((u) => `- ${u}`).join("\n")}` : text;
+  }
+  throw new AIError("truncated", "The research took too many steps. Try again.");
+}

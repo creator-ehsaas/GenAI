@@ -15,8 +15,8 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const exportData = () => {
-    const { brand, brandUrl, brandNotes, ideas, posts, media, settings } = useStore.getState();
-    const data = { version: 1, exportedAt: new Date().toISOString(), brand, brandUrl, brandNotes, ideas, posts, media, settings: { ...settings, apiKey: "" } };
+    const { brand, brandUrl, brandNotes, ideas, posts, media, competitors, report, settings } = useStore.getState();
+    const data = { version: 1, exportedAt: new Date().toISOString(), brand, brandUrl, brandNotes, ideas, posts, media, competitors, report, settings: { ...settings, apiKey: "" } };
     downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), "reelforge-workspace.json");
   };
 
@@ -69,7 +69,7 @@ export default function SettingsPage() {
 
       <section className="card">
         <h2>Your data</h2>
-        <p className="hint">Everything lives in this browser. Export a backup of your brand, ideas, posts and schedule (media files and rendered videos are not included).</p>
+        <p className="hint">Everything lives in this browser. Export a backup of your brand, competitors, ideas, posts and schedule (media files and rendered videos are not included).</p>
         <div className="row">
           <button className="btn" onClick={exportData}>
             <Download /> Export workspace
@@ -94,6 +94,8 @@ export default function SettingsPage() {
                   brandUrl: d.brandUrl ?? "",
                   brandNotes: d.brandNotes ?? "",
                   ideas: d.ideas ?? [],
+                  competitors: d.competitors ?? [],
+                  report: d.report ?? null,
                   posts: (d.posts ?? []).map((p: { renderId?: string }) => ({ ...p, renderId: null })),
                   settings: { ...settings, ...d.settings, apiKey: settings.apiKey },
                 });

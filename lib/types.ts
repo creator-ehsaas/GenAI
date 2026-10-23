@@ -1,4 +1,4 @@
-import type { BrandProfile, Format, Idea } from "./schemas";
+import type { BrandProfile, CompetitorAd, Format, Idea, PatternReport } from "./schemas";
 
 export type MediaKind = "video" | "image" | "audio";
 export type MediaRole = "hook" | "demo" | "broll" | "image" | "music";
@@ -81,4 +81,21 @@ export type Settings = {
   postsPerDay: number;
 };
 
-export type { BrandProfile, Format, Idea };
+export type AdSource = "paste" | "screenshot" | "meta" | "research" | "manual";
+export type SavedAd = CompetitorAd & { id: string; source: AdSource; thumb?: string; addedAt: number };
+
+export type Competitor = {
+  id: string;
+  name: string;
+  url: string;
+  notes: string;
+  positioning: string;
+  channels: string[];
+  research: string;
+  ads: SavedAd[];
+  createdAt: number;
+};
+
+export type SavedReport = { report: PatternReport; createdAt: number; adCount: number; competitorIds: string[] };
+
+export type { BrandProfile, CompetitorAd, Format, Idea, PatternReport };

@@ -3,6 +3,7 @@ import {
   ArrowRight,
   BarChart3,
   CalendarDays,
+  Swords,
   Check,
   Code2,
   Globe,
@@ -30,6 +31,7 @@ const FORMATS = [
 const FEATURES = [
   { icon: Globe, title: "Brand analysis", body: "Paste a URL or app store link. AI maps your audience, their pains in their own words, and your angles." },
   { icon: Lightbulb, title: "Idea engine", body: "Dozens of hooks, angles and captions across four formats, never repeating what you've made." },
+  { icon: Swords, title: "Competitor ad intelligence", body: "Build a swipe file of competitors' ads from screenshots, pasted copy or the Meta Ad Library. AI finds the hook patterns, long-running winners and the gaps you can own." },
   { icon: Layers, title: "Proven formats", body: "POV, 'nobody tells you', reaction → demo, starter packs, expectation vs reality, and more." },
   { icon: Video, title: "In-browser studio", body: "Live phone preview, six text styles, music, timing. Renders MP4 right in your browser." },
   { icon: Table2, title: "Batch mode", body: "Paste 50 hooks, pick a clip pool, and get 50 captioned videos plus a captions CSV in one ZIP." },

@@ -1,4 +1,4 @@
-import { CREATOR_SYSTEM, generate } from "@/lib/ai";
+import { CREATOR_SYSTEM, generate, InputError } from "@/lib/ai";
 import { fetchPage } from "@/lib/fetchPage";
 import { handler } from "@/lib/route";
 import { AnalyzeRequest, BrandProfileSchema } from "@/lib/schemas";
@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 export const POST = handler(AnalyzeRequest, async ({ url, notes }) => {
-  if (!url?.trim() && !notes?.trim()) throw new Error("Give a URL or a description of the product.");
+  if (!url?.trim() && !notes?.trim()) throw new InputError("Give a URL or a description of the product.");
   let page = null;
   let fetchError: string | null = null;
   if (url?.trim()) {
@@ -15,7 +15,7 @@ export const POST = handler(AnalyzeRequest, async ({ url, notes }) => {
       page = await fetchPage(url.trim());
     } catch (e) {
       fetchError = e instanceof Error ? e.message : "Couldn't fetch the page.";
-      if (!notes?.trim()) throw new Error(fetchError);
+      if (!notes?.trim()) throw new InputError(fetchError);
     }
   }
   const prompt = `Build a social content brand profile for this product so we can write organic short-form videos about it.

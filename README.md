@@ -9,6 +9,7 @@ Built with Next.js 15, React 19 and the Anthropic API (Claude).
 | Area | What it does |
 | --- | --- |
 | **Brand** | Fetches a website, App Store or Play Store page and builds a profile: audiences, pain points in their own words, benefits, tone, keywords, hashtags, CTAs. Fully editable. |
+| **Competitors** | A swipe file of competitors' ads per competitor: paste copy or transcripts, upload screenshots (read with Claude vision), import from the Meta Ad Library with run times, or research a competitor on the web with sources. A patterns report finds recurring hook shapes, angles and how crowded they are, formats, CTAs, offers, long-running ads, and gaps, then turns them into a playbook of ideas for your brand. |
 | **Ideas** | Generates ideas across four formats, each with a hook, angle, caption and hashtags. Never repeats hooks you already have. One click turns an idea into a post. |
 | **Formats** | A library of proven structures (POV, "nobody tells you", reaction → demo, "don't download this", listicle carousels, starter packs, expectation vs reality…). AI fills any of them in for your product. |
 | **Create** | Editor with a live phone preview. Formats: hook video, hook + demo, slideshow, meme. Six text styles, four fonts, positioning, sizing, gradient fallbacks, music, timing, AI hooks and captions. |
@@ -17,7 +18,7 @@ Built with Next.js 15, React 19 and the Anthropic API (Claude).
 | **Media** | Upload hook clips, demo screen recordings, B-roll, images and music. Stored in the browser (IndexedDB), never uploaded. Links to free portrait stock footage. |
 | **Calendar** | Month view, one-click auto-scheduling (N posts a day at set times), per-platform targeting, overdue reminders, and `.ics` export with captions in each event. |
 | **Analytics** | Log views, likes, comments, shares and saves; see totals, engagement rate, top posts and per-format performance; ask AI what's working and what to make next. |
-| **API** | Every AI feature is a JSON endpoint (`/api/analyze`, `/ideas`, `/hooks`, `/captions`, `/slideshow`, `/insights`), optionally protected by a bearer key. Docs at `/studio/api`. |
+| **API** | Every AI feature is a JSON endpoint (`/api/analyze`, `/ideas`, `/hooks`, `/captions`, `/slideshow`, `/insights`, `/competitors/*`), optionally protected by a bearer key. Docs at `/studio/api`. |
 
 Videos are rendered client-side with `<canvas>` + `MediaRecorder` (MP4/H.264 in Chrome and Edge, WebM elsewhere) at 720×1280 or 1080×1920. Slideshows can also be exported as a ZIP of 1080×1920 PNGs.
 
@@ -33,6 +34,7 @@ npm run dev                  # http://localhost:3000
 | --- | --- | --- |
 | `ANTHROPIC_API_KEY` | yes (for AI) | Key from https://console.anthropic.com. Without it, editing and rendering still work. |
 | `ANTHROPIC_MODEL` | no | Defaults to `claude-opus-5-5`. |
+| `META_AD_LIBRARY_TOKEN` | no | Enables importing competitor ads from Meta's Ad Library (EU-delivered ads only, per Meta). |
 | `REELFORGE_API_KEY` | no | When set, `/api/*` requires `Authorization: Bearer <key>`. Enter the same key in Studio → Settings. |
 
 Production: `npm run build && npm start`, or deploy to any Node host (Vercel works out of the box).

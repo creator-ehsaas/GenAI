@@ -136,7 +136,7 @@ code.mono, pre .mono { font-family: var(--mono); }
 .card.flat { box-shadow: none; }
 .card.sunk { background: var(--sunk); box-shadow: none; }
 .card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.num { font: 600 0.75rem/1 var(--body); font-variant-numeric: tabular-nums; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); flex: none; }
+span.num { font: 600 0.75rem/1 var(--body); font-variant-numeric: tabular-nums; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); flex: none; }
 
 .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7812rem; font-weight: 600; padding: 4px 9px; border-radius: 999px; background: var(--sunk); border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
 .chip.accent { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
@@ -290,6 +290,9 @@ dialog.modal::backdrop { background: rgba(10, 12, 20, 0.45); }
 .toast.err { background: var(--err); color: var(--on-status); }
 .toast.ok { background: var(--ok); color: var(--on-status); }
 .toast button { margin-left: auto; background: none; border: 0; color: inherit; cursor: pointer; opacity: 0.8; padding: 0; }
+
+.split { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- touch: 44pt targets ---------- */
 @media (pointer: coarse) {
