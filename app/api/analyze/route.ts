@@ -22,6 +22,6 @@ export const POST = handler(AnalyzeRequest, async ({ url, notes }) => {
 ${page ? `Page URL: ${page.url}\nTitle: ${page.title}\nMeta description: ${page.description}\nPage text${page.truncated ? " (first part of a long page)" : ""}:\n"""\n${page.text}\n"""` : ""}
 ${notes?.trim() ? `Notes from the founder:\n"""\n${notes.trim()}\n"""` : ""}
 Ground every field in the material above; where it is silent, infer sensibly from the category. Write pain points the way the audience would say them out loud.`;
-  const profile = await generate({ schema: BrandProfileSchema, system: CREATOR_SYSTEM, prompt, effort: "medium" });
+  const profile = await generate({ schema: BrandProfileSchema, system: CREATOR_SYSTEM, prompt });
   return { profile, source: page ? { url: page.url, title: page.title } : null, warning: fetchError };
 });

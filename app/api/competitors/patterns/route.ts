@@ -22,5 +22,5 @@ Find the patterns:
 5. Gaps: angles, audiences, formats or tones nobody is using well that fit our brand.
 6. A playbook of 5-8 plays for our brand that borrow the structures that work and exploit the gaps. Each play's exampleHook is written for our product in our tone.
 Base counts only on the ads given. If the sample is small, say so in the summary.`;
-  return generate({ schema: PatternReportSchema, system: ANALYST_SYSTEM, prompt, effort: "high" });
+  return generate({ schema: PatternReportSchema, system: ANALYST_SYSTEM, prompt });
 });

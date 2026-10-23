@@ -2,14 +2,14 @@
 
 An AI short-form content studio. Paste your product's URL and Reel Forge learns your audience, writes hooks, captions and slideshows, renders ready-to-post TikToks, Instagram Reels and YouTube Shorts in the browser, and plans them on a content calendar.
 
-Built with Next.js 15, React 19 and the Anthropic API (Claude).
+Built with Next.js 15, React 19 and the Google Gemini API.
 
 ## Features
 
 | Area | What it does |
 | --- | --- |
 | **Brand** | Fetches a website, App Store or Play Store page and builds a profile: audiences, pain points in their own words, benefits, tone, keywords, hashtags, CTAs. Fully editable. |
-| **Competitors** | A swipe file of competitors' ads per competitor: paste copy or transcripts, upload screenshots (read with Claude vision), import from the Meta Ad Library with run times, or research a competitor on the web with sources. A patterns report finds recurring hook shapes, angles and how crowded they are, formats, CTAs, offers, long-running ads, and gaps, then turns them into a playbook of ideas for your brand. |
+| **Competitors** | A swipe file of competitors' ads per competitor: paste copy or transcripts, upload screenshots (read with Gemini vision), import from the Meta Ad Library with run times, or research a competitor on the web with Google Search grounding and sources. A patterns report finds recurring hook shapes, angles and how crowded they are, formats, CTAs, offers, long-running ads, and gaps, then turns them into a playbook of ideas for your brand. |
 | **Ideas** | Generates ideas across four formats, each with a hook, angle, caption and hashtags. Never repeats hooks you already have. One click turns an idea into a post. |
 | **Formats** | A library of proven structures (POV, "nobody tells you", reaction → demo, "don't download this", listicle carousels, starter packs, expectation vs reality…). AI fills any of them in for your product. |
 | **Create** | Editor with a live phone preview. Formats: hook video, hook + demo, slideshow, meme. Six text styles, four fonts, positioning, sizing, gradient fallbacks, music, timing, AI hooks and captions. |
@@ -26,14 +26,14 @@ Videos are rendered client-side with `<canvas>` + `MediaRecorder` (MP4/H.264 in 
 
 ```bash
 npm install
-cp .env.example .env.local   # then set ANTHROPIC_API_KEY
+cp .env.example .env.local   # then set GEMINI_API_KEY
 npm run dev                  # http://localhost:3000
 ```
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` | yes (for AI) | Key from https://console.anthropic.com. Without it, editing and rendering still work. |
-| `ANTHROPIC_MODEL` | no | Defaults to `claude-opus-5-5`. |
+| `GEMINI_API_KEY` | yes (for AI) | Key from https://aistudio.google.com/apikey. Without it, editing and rendering still work. |
+| `GEMINI_MODEL` | no | Defaults to `gemini-3.8-flash`. Any Gemini model your key can use, e.g. `gemini-4-argon` for the most capable one. |
 | `META_AD_LIBRARY_TOKEN` | no | Enables importing competitor ads from Meta's Ad Library (EU-delivered ads only, per Meta). |
 | `REELFORGE_API_KEY` | no | When set, `/api/*` requires `Authorization: Bearer <key>`. Enter the same key in Studio → Settings. |
 
@@ -47,7 +47,7 @@ app/
   studio/                  the app (dashboard, brand, ideas, formats, create, batch, posts, media, calendar, analytics, api, settings)
   api/                     AI endpoints (Node runtime)
 lib/
-  ai.ts                    Anthropic client, structured outputs, error mapping, access key
+  ai.ts                    Gemini client, JSON-schema outputs, search grounding, error mapping, access key
   schemas.ts               zod schemas shared by API and UI
   fetchPage.ts             URL fetcher with private-address blocking
   render/engine.ts         canvas drawing: backgrounds, cover-fit media, text styles, Stage
@@ -58,7 +58,7 @@ lib/
 components/                phone preview, media picker, style controls, toasts
 ```
 
-AI calls use structured outputs validated with zod, adaptive thinking, and the server-side refusal fallback.
+AI calls ask Gemini for JSON matching a schema generated from the zod types, then validate the answer with zod. Competitor research uses Gemini with Google Search grounding.
 
 ## Notes and limits
 

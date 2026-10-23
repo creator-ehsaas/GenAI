@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.1.0",
+    "@google/genai": "^2.31.0",
     "idb-keyval": "^6.3.0",
     "jszip": "^3.10.2",
     "lucide-react": "^1.61.0",

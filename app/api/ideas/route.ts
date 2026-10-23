@@ -20,5 +20,5 @@ Rules:
 - hook_demo: demoLabel is a 2-6 word label shown over the product demo part.
 - Captions are 1-3 short lines in a casual creator voice that add to the hook rather than repeat it, ending with a soft CTA.
 ${avoid?.length ? `Do not reuse these hooks: ${JSON.stringify(avoid.slice(0, 60))}` : ""}`;
-  return generate({ schema: IdeasResponseSchema, system: CREATOR_SYSTEM, prompt, effort: "medium" });
+  return generate({ schema: IdeasResponseSchema, system: CREATOR_SYSTEM, prompt });
 });

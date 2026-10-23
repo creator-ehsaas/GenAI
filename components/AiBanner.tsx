@@ -14,7 +14,7 @@ export function AiBanner() {
       <div className="banner warn">
         <AlertTriangle />
         <span>
-          AI is off: the server has no <code>ANTHROPIC_API_KEY</code>. Add it to <code>.env.local</code> and restart. Editing and rendering still work.
+          AI is off: the server has no <code>GEMINI_API_KEY</code>. Add it to <code>.env.local</code> and restart. Editing and rendering still work.
         </span>
       </div>
     );

@@ -146,7 +146,7 @@ function AddAds({ c }: { c: Competitor }) {
 
       {mode === "paste" && (
         <>
-          <p className="hint">Paste ad copy, video transcripts or a list of hooks. Claude splits it into separate ads and tags each one.</p>
+          <p className="hint">Paste ad copy, video transcripts or a list of hooks. AI splits it into separate ads and tags each one.</p>
           <textarea rows={6} value={text} onChange={(e) => setText(e.target.value)} placeholder={"POV: you finally found a planner that plans for you…\nStarted running on Mar 3, 2026 · Instagram, Facebook\n\n---\n\nStop rewriting your to-do list every morning…"} />
           <div className="row">
             <button className="btn primary" onClick={extractText} disabled={busy !== null || !text.trim()}>
@@ -159,7 +159,7 @@ function AddAds({ c }: { c: Competitor }) {
       {mode === "screens" && (
         <>
           <p className="hint">
-            Screenshot ads from the Meta Ad Library, TikTok Top Ads or your feed. Claude reads the on-screen text, copy, CTA and the &quot;Started running&quot; date.
+            Screenshot ads from the Meta Ad Library, TikTok Top Ads or your feed. AI reads the on-screen text, copy, CTA and the &quot;Started running&quot; date.
           </p>
           <div className="row">
             <button className="btn primary" onClick={() => fileRef.current?.click()} disabled={busy !== null}>
@@ -395,7 +395,7 @@ function Patterns() {
           </button>
         </div>
         <p className="hint">
-          Claude compares every saved ad across {competitors.length} competitor{competitors.length === 1 ? "" : "s"}: hook shapes, angles, formats, offers, which ads keep running, and
+          AI compares every saved ad across {competitors.length} competitor{competitors.length === 1 ? "" : "s"}: hook shapes, angles, formats, offers, which ads keep running, and
           the gaps you can own. {total < 3 && "Save at least 3 ads first."}
         </p>
         {busy === "report" && <p className="status">Analyzing… this can take a minute.</p>}
